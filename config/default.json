@@ -1,0 +1,14 @@
+{
+    "ChatGPT_API_Key" : "askdkjfdsalkjl;",
+    "Resume_Folder" : "./sample_resumes",
+    "Max_GPT_Version" : 3.5,
+    "Text_Separator" : "###",
+    "ChatGPT_Specs" :  [{
+        "Version": 3.5, 
+        "MaxTokens": 4096
+    }],
+    "Prompts" :  [{
+        "Name": "Top5Skills", 
+        "Prompt": "Summarize the top 5 technical skills for the candidate in the following resume"
+    }]
+}

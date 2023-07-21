@@ -1,0 +1,19 @@
+{
+  "name": "resumereviewer",
+  "type": "module",
+  "version": "1.0.0",
+  "description": "Use ChatGPT to summarize a resume",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jerry Gray",
+  "license": "ISC",
+  "dependencies": {
+    "config": "^3.3.9",
+    "docxtemplater": "^3.37.12",
+    "jszip": "^3.10.1",
+    "mammoth": "^1.6.0",
+    "pdfreader": "^3.0.0"
+  }
+}
