@@ -36,8 +36,7 @@ import path from 'path';
 import { PdfReader } from 'pdfreader';
 import Docxtemplater from 'docxtemplater';
 import mammoth from 'mammoth';
-import {OpenAIApi} from "openai";
-//import * as fs from "node:fs";
+import OpenAIApi from "openai";
 
 // Read Configuration
 const ChatGPT_API_Key = config.get("ChatGPT_API_Key");
@@ -48,7 +47,6 @@ const ChatGPT_Specs = config.get("ChatGPT_Specs");
 const Prompts = config.get("Prompts");
 
 // Set your OpenAI API key here
-//var openai = new OpenAIApi();
 OpenAIApi.apiKey = ChatGPT_API_Key;
 
 //Sanity Check
@@ -210,7 +208,6 @@ function dumpConfiguration() {
 async function generateChatResponse(prompt, resume) {
 
   try {
-        
     const response = await OpenAIApi.ChatCompletion.create({
       model: 'gpt-3.5-turbo', // Change the model if needed
       messages: [
