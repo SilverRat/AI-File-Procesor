@@ -1,5 +1,5 @@
 {
-    "ChatGPT_API_Key" : "askdkjfdsalkjl;",
+    "ChatGPT_API_Key" : "Don't put in default.json. Put this in local.json so it doesn't go to GitHub!!",
     "Resume_Folder" : "./sample_resumes",
     "Max_GPT_Version" : 3.5,
     "Text_Separator" : "###",
