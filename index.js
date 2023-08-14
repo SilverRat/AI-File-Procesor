@@ -36,6 +36,8 @@ import path from 'path';
 import { PdfReader } from 'pdfreader';
 import Docxtemplater from 'docxtemplater';
 import mammoth from 'mammoth';
+import {OpenAIApi} from "openai";
+//import * as fs from "node:fs";
 
 // Read Configuration
 const ChatGPT_API_Key = config.get("ChatGPT_API_Key");
@@ -44,6 +46,10 @@ const Max_GPT_Version = config.get("Max_GPT_Version");
 const Text_Separator = config.get("Text_Separator");
 const ChatGPT_Specs = config.get("ChatGPT_Specs");
 const Prompts = config.get("Prompts");
+
+// Set your OpenAI API key here
+//var openai = new OpenAIApi();
+OpenAIApi.apiKey = ChatGPT_API_Key;
 
 //Sanity Check
 // dumpConfiguration();
@@ -132,28 +138,30 @@ function readFilesInFolder(folderPath) {
 
       switch (fileType) {
         case '.txt':
+          /*
           readTextFile(filePath, (err, data) => {
             if (err) {
               console.error('Error reading file:', err);
               return;
             }
-            console.log(`Content of ${file}:`);
-            console.log(data);
+            //processResume(data,filePath);
           });
-          break;
+          */
 
+          console.log(`${fileType} file detected. Supported but not processing. Skipping reading the file.`);
+          break;
         case '.pdf':
            readPDFFile(filePath, (err, data) => {
                 if (err) {
                   console.error('Error:', err);
                   return;
                 }
-                console.log(`Content of ${file}:`);
-                console.log(data);
+                processResume(data,filePath);
               });
 
             break;
         case '.doc':
+          /*
             readDocFile(filePath, (err, data) => {
                 if (err) {
                   console.error('Error:', err);
@@ -162,8 +170,9 @@ function readFilesInFolder(folderPath) {
                 console.log(`Content of ${file}:`);
                 console.log(data);
               });
+          */
 
-          //console.log(`${fileType} file detected. Currently unsupported. Skipping reading the file.`);
+          console.log(`${fileType} file detected. Currently unsupported. Skipping reading the file.`);
           break;
         case '.docx':
             /*
@@ -186,8 +195,6 @@ function readFilesInFolder(folderPath) {
   });
 }
 
-
-
 //Helper function
 function dumpConfiguration() {
     console.log("******** Config **************");
@@ -197,4 +204,48 @@ function dumpConfiguration() {
     console.log("Text_Separator: " + Text_Separator);
     console.log("ChatGPT_Specs: " + ChatGPT_Specs[0].Version + " " + ChatGPT_Specs[0].MaxTokens);
     console.log("Prompts: " + Prompts[0].Name + " " + Prompts[0].Prompt);
+}
+
+
+async function generateChatResponse(prompt, resume) {
+
+  try {
+        
+    const response = await OpenAIApi.ChatCompletion.create({
+      model: 'gpt-3.5-turbo', // Change the model if needed
+      messages: [
+        { role: 'system', content: 'You are a human resources professional and an expert in Information Technology. Use the resume delimited by triple quotes to answer questions.' },
+        { role: 'user', content: '"""' + resume + '"""' + prompt }
+      ],
+      max_tokens: 4000 // Adjust as needed
+    });
+    
+    console.log("Response: " + response, null, 2);
+
+    return response.choices[0].message.content;
+  } catch (error) {
+    console.error('Error generating response:', error.message);
+    return '';
+  }
+}
+
+async function processResume(resume, filePath) {
+
+  // check resume size (tokens) and reduce size if needed
+  for (const prompt of Prompts) {
+    const response = await generateChatResponse(prompt, resume);
+
+    console.log("Path Name = " + filePath);
+
+    // Save the response to a file
+    const fileName = filePath + "_" + prompt.Name + ".txt";
+    fs.writeFile(fileName, response, (err) => {
+      if (err) {
+        console.error('Error saving response to file:', err);
+      } else {
+        console.log('Response saved to', fileName);
+      }
+    });
+  }
+
 }
