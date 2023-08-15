@@ -36,7 +36,7 @@ import path from 'path';
 import { PdfReader } from 'pdfreader';
 import Docxtemplater from 'docxtemplater';
 import mammoth from 'mammoth';
-import OpenAIApi from "openai";
+import { Configuration, OpenAIApi } from "openai";
 
 // Read Configuration
 const ChatGPT_API_Key = config.get("ChatGPT_API_Key");
@@ -47,7 +47,15 @@ const ChatGPT_Specs = config.get("ChatGPT_Specs");
 const Prompts = config.get("Prompts");
 
 // Set your OpenAI API key here
-OpenAIApi.apiKey = ChatGPT_API_Key;
+// OpenAIApi.apiKey = ChatGPT_API_Key;
+// OpenAIApi.generateChatResponse.create({});
+
+const configuration = new Configuration({
+    //organization: "YOUR_ORG_ID",
+    apiKey: ChatGPT_API_Key,
+});
+const openai = new OpenAIApi(configuration);
+//openai.createChatCompletion({});
 
 //Sanity Check
 // dumpConfiguration();
@@ -156,7 +164,6 @@ function readFilesInFolder(folderPath) {
                 }
                 processResume(data,filePath);
               });
-
             break;
         case '.doc':
           /*
@@ -206,9 +213,10 @@ function dumpConfiguration() {
 
 
 async function generateChatResponse(prompt, resume) {
-
+  console.log();
+  console.log("entering generateChatResponse");
   try {
-    const response = await OpenAIApi.ChatCompletion.create({
+    const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo', // Change the model if needed
       messages: [
         { role: 'system', content: 'You are a human resources professional and an expert in Information Technology. Use the resume delimited by triple quotes to answer questions.' },
@@ -216,6 +224,7 @@ async function generateChatResponse(prompt, resume) {
       ],
       max_tokens: 4000 // Adjust as needed
     });
+    console.log("made chat call");
     
     console.log("Response: " + response, null, 2);
 
@@ -231,8 +240,6 @@ async function processResume(resume, filePath) {
   // check resume size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
     const response = await generateChatResponse(prompt, resume);
-
-    console.log("Path Name = " + filePath);
 
     // Save the response to a file
     const fileName = filePath + "_" + prompt.Name + ".txt";
