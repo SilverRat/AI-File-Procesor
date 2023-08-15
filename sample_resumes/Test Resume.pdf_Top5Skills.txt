@@ -1,0 +1,11 @@
+The top 5 technical skills for the candidate in the provided resume are:
+
+1. C#: The candidate has experience and expertise in C#, which is a widely used programming language for developing various applications and software.
+
+2. SQL: The candidate is skilled in SQL, which is essential for managing and manipulating relational databases. This skill is crucial for data analysis and database management.
+
+3. Node: The candidate has experience with Node.js, a popular JavaScript runtime environment. This skill indicates their ability to develop server-side applications using JavaScript.
+
+4. Oracle: The candidate has knowledge and experience with Oracle, a widely used relational database management system. This skill is valuable for working with large-scale databases and enterprise-level applications.
+
+5. VB (Visual Basic): The candidate has proficiency in Visual Basic, a programming language commonly used for developing Windows applications. This skill demonstrates their ability to develop user-friendly and functional desktop applications.

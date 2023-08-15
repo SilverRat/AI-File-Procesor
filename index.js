@@ -171,26 +171,31 @@ async function generateChatResponse(prompt, resume) {
   console.log();
   console.log("entering generateChatResponse");
   //console.log("Prompt = " + prompt);
-  resume = resume.replace(/(\r?\n|\r)/g, " ");
+  resume = resume.replace(/(\r?\n)/g, " ");
+  resume = resume.replace(/(\r)/g, " ");
+  resume = resume.replace(/(\t)/g, " ");
   //console.log("Resume = " + resume);
 
   try {
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo', // Change the model if needed
+      temperature: 0.0,
       messages: [
-        { role: 'system', content: 'You are a human resources professional and an expert in Information Technology. Use the resume delimited by triple quotes to answer questions.' },
-        { role: 'user', content: '"""' + resume + '"""' + prompt }
+        { role: 'system', content: 'You are a human resources professional and an expert in Information Technology. Use the resume delimited by triple single quotes to answer questions.' },
+        { role: 'user', content: "Resume C# SQL Node Oracle VB javascript Other sacramento san jose.  Question: " + prompt }
       ],
       max_tokens: 4000 // Adjust as needed
     });
     console.log("made chat call");
       
-    console.log("Response: " + response, null, 2);
+    console.log(response);
+    console.log();
+    console.log(response.data.choices[0]);
 
-    return response.choices[0].message.content;
+    return response.data.choices[0].message.content;
   } catch (error) {
     console.error('Error generating response:', error.message);
-    console.error(JSON.stringify(error,null,2));
+    //console.error(JSON.stringify(error,null,2));
     return '';
   }
 }
@@ -200,6 +205,8 @@ async function processResume(resume, filePath) {
   // check resume size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
     const response = await generateChatResponse(prompt.Prompt, resume);
+
+    console.log("Write Response " + response);
 
     // Save the response to a file
     const fileName = filePath + "_" + prompt.Name + ".txt";

@@ -10,6 +10,6 @@
     }],
     "Prompts" :  [{
         "Name": "Top5Skills", 
-        "Prompt": "Summarize the top 5 technical skills for the candidate in the following resume"
+        "Prompt": "Summarize the top 5 technical skills for the candidate in the provided resume"
     }]
 }
