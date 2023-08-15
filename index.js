@@ -200,17 +200,6 @@ function readFilesInFolder(folderPath) {
   });
 }
 
-//Helper function
-function dumpConfiguration() {
-    console.log("******** Config **************");
-    console.log("ChatGPT_API_Key: " + ChatGPT_API_Key);
-    console.log("Resume_Folder: " + Resume_Folder); 
-    console.log("Max_GPT_Version: " + Max_GPT_Version);
-    console.log("Text_Separator: " + Text_Separator);
-    console.log("ChatGPT_Specs: " + ChatGPT_Specs[0].Version + " " + ChatGPT_Specs[0].MaxTokens);
-    console.log("Prompts: " + Prompts[0].Name + " " + Prompts[0].Prompt);
-}
-
 
 async function generateChatResponse(prompt, resume) {
   console.log();
@@ -252,4 +241,15 @@ async function processResume(resume, filePath) {
     });
   }
 
+}
+
+//Helper function
+function dumpConfiguration() {
+  console.log("******** Config **************");
+  console.log("ChatGPT_API_Key: " + ChatGPT_API_Key);
+  console.log("Resume_Folder: " + Resume_Folder); 
+  console.log("Max_GPT_Version: " + Max_GPT_Version);
+  console.log("Text_Separator: " + Text_Separator);
+  console.log("ChatGPT_Specs: " + ChatGPT_Specs[0].Version + " " + ChatGPT_Specs[0].MaxTokens);
+  console.log("Prompts: " + Prompts[0].Name + " " + Prompts[0].Prompt);
 }
