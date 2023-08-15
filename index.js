@@ -174,6 +174,10 @@ async function generateChatResponse(prompt, resume) {
   resume = resume.replace(/(\r?\n)/g, " ");
   resume = resume.replace(/(\r)/g, " ");
   resume = resume.replace(/(\t)/g, " ");
+  resume = resume.replace(/‘/g, "");
+  resume = resume.replace(/•/g, "");
+  
+  
   //console.log("Resume = " + resume);
 
   try {
@@ -182,7 +186,7 @@ async function generateChatResponse(prompt, resume) {
       temperature: 0.0,
       messages: [
         { role: 'system', content: 'You are a human resources professional and an expert in Information Technology. Use the resume delimited by triple single quotes to answer questions.' },
-        { role: 'user', content: "Resume C# SQL Node Oracle VB javascript Other sacramento san jose.  Question: " + prompt }
+        { role: 'user', content: resume + ' Question: ' + prompt }
       ],
       max_tokens: 4000 // Adjust as needed
     });
@@ -194,8 +198,8 @@ async function generateChatResponse(prompt, resume) {
 
     return response.data.choices[0].message.content;
   } catch (error) {
-    console.error('Error generating response:', error.message);
-    //console.error(JSON.stringify(error,null,2));
+      console.error('Error generating response:', error.message);
+      console.error(JSON.stringify(error,null,2));
     return '';
   }
 }
