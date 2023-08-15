@@ -170,6 +170,7 @@ function readFilesInFolder(folderPath) {
 async function generateChatResponse(prompt, resume) {
   console.log();
   console.log("entering generateChatResponse");
+  //console.log("Prompt = " + prompt);
   try {
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo', // Change the model if needed
@@ -180,7 +181,8 @@ async function generateChatResponse(prompt, resume) {
       max_tokens: 4000 // Adjust as needed
     });
     console.log("made chat call");
-    
+   
+   
     console.log("Response: " + response, null, 2);
 
     return response.choices[0].message.content;
@@ -195,7 +197,7 @@ async function processResume(resume, filePath) {
 
   // check resume size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
-    const response = await generateChatResponse(prompt, resume);
+    const response = await generateChatResponse(prompt.Prompt, resume);
 
     // Save the response to a file
     const fileName = filePath + "_" + prompt.Name + ".txt";
