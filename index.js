@@ -1,34 +1,3 @@
-// This app is a fairly fixed workflow
-// config
-//      ChatGPT API Key
-//      Folder to process
-//      Max GPT version to use
-//
-//      ChatGPTSpecs Array
-//          GPT version
-//          GPT Max token size
-//
-//      Prompt Array
-//          Prompt Name
-//          Prompt
-
-// 1. Open a folder specified in the config.
-
-// 2. Loop through all files in the folder.
-
-// 3. If the file is a Word or PDF Doc, Open it and read the text
-
-// 4. if the text is over Token Max (4096) trim the text down to 4096- desired response buffer size.
-
-// 5. Start a new conversatin and Provide the resume text 
-
-// 6. Provide the prompt
-
-// 7. Save the response as filename-response.txt
-
-// 8. loop to next file.
-
-
 // Imports
 import config from 'config';
 import fs from 'fs';
@@ -48,9 +17,6 @@ const ChatGPT_Specs = config.get("ChatGPT_Specs");
 const Prompts = config.get("Prompts");
 
 // Set your OpenAI API key here
-// OpenAIApi.apiKey = ChatGPT_API_Key;
-// OpenAIApi.generateChatResponse.create({});
-
 const configuration = new Configuration({
     organization: GPTOrgId,
     apiKey: ChatGPT_API_Key,
