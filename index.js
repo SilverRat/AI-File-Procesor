@@ -40,6 +40,7 @@ import { Configuration, OpenAIApi } from "openai";
 
 // Read Configuration
 const ChatGPT_API_Key = config.get("ChatGPT_API_Key");
+const GPTOrgId = config.get("GPTOrgId");
 const Resume_Folder = config.get("Resume_Folder");
 const Max_GPT_Version = config.get("Max_GPT_Version");
 const Text_Separator = config.get("Text_Separator");
@@ -51,11 +52,10 @@ const Prompts = config.get("Prompts");
 // OpenAIApi.generateChatResponse.create({});
 
 const configuration = new Configuration({
-    //organization: "YOUR_ORG_ID",
+    organization: GPTOrgId,
     apiKey: ChatGPT_API_Key,
 });
 const openai = new OpenAIApi(configuration);
-//openai.createChatCompletion({});
 
 //Sanity Check
 // dumpConfiguration();
@@ -220,6 +220,7 @@ async function generateChatResponse(prompt, resume) {
     return response.choices[0].message.content;
   } catch (error) {
     console.error('Error generating response:', error.message);
+    console.error(JSON.stringify(error,null,2));
     return '';
   }
 }
