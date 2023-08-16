@@ -1,0 +1,11 @@
+The top 5 technical skills for the candidate in the provided resume are:
+
+1. .NET Development: The candidate has extensive experience in developing .NET web-based applications using ASP.NET MVC, ASP.NET, C#, VB.NET, and other related technologies.
+
+2. Web Services: The candidate has strong hands-on experience in designing and implementing web services using technologies like WCF, RESTful APIs, and SOAP.
+
+3. Database Development: The candidate has experience in designing and implementing databases using SQL Server, including using Entity Framework for code-first development.
+
+4. Agile Methodology: The candidate has experience working in Agile development environments, participating in daily standup meetings, and using tools like Git for source code repository and agile stories updates.
+
+5. Front-end Development: The candidate has experience in designing and developing rich user interfaces using technologies like Angular, TypeScript, JavaScript, HTML, CSS, and jQuery.
