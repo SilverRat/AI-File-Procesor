@@ -171,11 +171,12 @@ async function generateChatResponse(prompt, resume) {
   console.log();
   console.log("entering generateChatResponse");
   //console.log("Prompt = " + prompt);
-  resume = resume.replace(/(\r?\n)/g, " ");
-  resume = resume.replace(/(\r)/g, " ");
-  resume = resume.replace(/(\t)/g, " ");
-  resume = resume.replace(/‘/g, "");
-  resume = resume.replace(/•/g, "");
+  resume = resume.replace(/(\r?\n)/g, " "); //Remove Carriage return / line feed
+  resume = resume.replace(/(\r)/g, " "); // Remove Carriage return
+  resume = resume.replace(/(\t)/g, " "); // Remove tabs
+  resume = resume.replace(/‘/g, ""); // Remove ticks
+  resume = resume.replace(/•/g, ""); // Remove bullets
+  resume = resume.substring(0, 15000); //SO, we can only send so many tokens. Chopping down to a "reasonable" number of characters to reduce token count
   
   
   //console.log("Resume = " + resume);
