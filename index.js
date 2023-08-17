@@ -32,7 +32,7 @@ readFilesInFolder(Resume_Folder);
 async function readTextFile(filePath, callback) {
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
-      console.error('Error reading file:', err);
+      console.log('Error reading file:', err);
       return callback(err, null);
     }
     callback(null, data);

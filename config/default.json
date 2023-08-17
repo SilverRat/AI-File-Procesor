@@ -6,7 +6,7 @@
     "Text_Separator" : "###",
     "ChatGPT_Specs" :  [{
         "Version": 3.5, 
-        "MaxTokens": 4096
+        "MaxTokens": 500
     }],
     "Prompts" :  [{
         "Name": "Top5Skills", 
