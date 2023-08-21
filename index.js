@@ -179,7 +179,7 @@ async function generateChatResponse(prompt, resume) {
         { role: 'system', content: 'You are a human resources professional and an expert in Information Technology. Use the resume delimited by triple single quotes to answer questions.' },
         { role: 'user', content: resume + ' Question: ' + prompt }
       ],
-      max_tokens: 500 // Adjust as needed - NOTE. This is the tokens to reserve for the RESpONSE!!!!
+      max_tokens: 400 // Adjust as needed - NOTE. This is the tokens to reserve for the RESpONSE!!!!
     });
     console.log("made chat call");
       
@@ -202,9 +202,11 @@ async function processResume(resume, filePath) {
   resume = resume.replace(/(\t)/g, " "); // Remove tabs
   resume = resume.replace(/‘/g, ""); // Remove ticks
   resume = resume.replace(/•/g, ""); // Remove bullets
+  resume = resume.replace(/¨/g, ""); // Remove ¨
+  
 
   //Reduce character count so we will have around 3500 tokens max
-  resume = resume.substring(0, 15000); 
+  resume = resume.substring(0, 14000); 
 
 
   // check resume size (tokens) and reduce size if needed
