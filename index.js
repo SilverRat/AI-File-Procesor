@@ -170,16 +170,6 @@ function readFilesInFolder(folderPath) {
 async function generateChatResponse(prompt, resume) {
   console.log();
   console.log("entering generateChatResponse");
-  //console.log("Prompt = " + prompt);
-  resume = resume.replace(/(\r?\n)/g, " "); //Remove Carriage return / line feed
-  resume = resume.replace(/(\r)/g, " "); // Remove Carriage return
-  resume = resume.replace(/(\t)/g, " "); // Remove tabs
-  resume = resume.replace(/‘/g, ""); // Remove ticks
-  resume = resume.replace(/•/g, ""); // Remove bullets
-  resume = resume.substring(0, 15000); //SO, we can only send so many tokens. Chopping down to a "reasonable" number of characters to reduce token count
-  
-  
-  //console.log("Resume = " + resume);
 
   try {
     const response = await openai.createChatCompletion({
@@ -206,6 +196,16 @@ async function generateChatResponse(prompt, resume) {
 }
 
 async function processResume(resume, filePath) {
+
+  resume = resume.replace(/(\r?\n)/g, " "); //Remove Carriage return / line feed
+  resume = resume.replace(/(\r)/g, " "); // Remove Carriage return
+  resume = resume.replace(/(\t)/g, " "); // Remove tabs
+  resume = resume.replace(/‘/g, ""); // Remove ticks
+  resume = resume.replace(/•/g, ""); // Remove bullets
+
+  //Reduce character count so we will have around 3500 tokens max
+  resume = resume.substring(0, 15000); 
+
 
   // check resume size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
