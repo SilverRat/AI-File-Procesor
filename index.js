@@ -167,7 +167,7 @@ function readFilesInFolder(folderPath) {
 }
 
 
-async function generateChatResponse(prompt, resume) {
+async function generateChatResponse(system, userPrompt) {
   console.log();
   console.log("entering generateChatResponse");
 
@@ -176,8 +176,8 @@ async function generateChatResponse(prompt, resume) {
       model: 'gpt-3.5-turbo', // Change the model if needed
       temperature: 0.0,
       messages: [
-        { role: 'system', content: 'You are a human resources professional and an expert in Information Technology. Use the resume delimited by triple single quotes to answer questions.' },
-        { role: 'user', content: resume + ' Question: ' + prompt }
+        { role: 'system', content: system },
+        { role: 'user', content: userPrompt }
       ],
       max_tokens: 400 // Adjust as needed - NOTE. This is the tokens to reserve for the RESpONSE!!!!
     });
@@ -211,7 +211,9 @@ async function processResume(resume, filePath) {
 
   // check resume size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
-    const response = await generateChatResponse(prompt.Prompt, resume);
+
+    const userPrompt = "Resume: " + resume + " " + prompt;
+    const response = await generateChatResponse(prompt.System, userPrompt);
 
     console.log("Write Response " + response);
 
