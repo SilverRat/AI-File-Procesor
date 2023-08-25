@@ -31,7 +31,7 @@ npm install
 ## Usage
 1. Open the config/default.json file and configure the necessary values (explained in the [Configuration](#configuration) section).
 
-2. Place your files in the specified Resume_Folder path.
+2. Place your files in the specified File_Folder path, or update the File_Folder path to the location of your files.
 
 3. Run the script using the following command:
 ~~~
@@ -43,7 +43,7 @@ Modify the configuration in the config/default.json file to set up the script:
 
 - ChatGPT_API_Key: **Your OpenAI API key.**
 - GPTOrgId: **Your OpenAI organization ID.**
-- Resume_Folder: **Path to the folder containing files.**
+- File_Folder: **Path to the folder containing files.**
 - Prompts: **Array of prompts with system and name.**
 
 The following configuration items should not need changes and may not be in use:
