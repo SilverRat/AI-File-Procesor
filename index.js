@@ -10,7 +10,7 @@ import { Configuration, OpenAIApi } from "openai";
 // Read Configuration
 const ChatGPT_API_Key = config.get("ChatGPT_API_Key");
 const GPTOrgId = config.get("GPTOrgId");
-const Resume_Folder = config.get("Resume_Folder");
+const File_Folder = config.get("File_Folder");
 const Max_GPT_Version = config.get("Max_GPT_Version");
 const Text_Separator = config.get("Text_Separator");
 const ChatGPT_Specs = config.get("ChatGPT_Specs");
@@ -27,7 +27,7 @@ const openai = new OpenAIApi(configuration);
 // dumpConfiguration();
 
 // Lets find and loop through folders
-readFilesInFolder(Resume_Folder);
+readFilesInFolder(File_Folder);
 
 async function readTextFile(filePath, callback) {
   fs.readFile(filePath, 'utf8', (err, data) => {
@@ -234,7 +234,7 @@ async function processResume(resume, filePath) {
 function dumpConfiguration() {
   console.log("******** Config **************");
   console.log("ChatGPT_API_Key: " + ChatGPT_API_Key);
-  console.log("Resume_Folder: " + Resume_Folder); 
+  console.log("File_Folder: " + File_Folder); 
   console.log("Max_GPT_Version: " + Max_GPT_Version);
   console.log("Text_Separator: " + Text_Separator);
   console.log("ChatGPT_Specs: " + ChatGPT_Specs[0].Version + " " + ChatGPT_Specs[0].MaxTokens);

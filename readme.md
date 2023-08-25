@@ -1,6 +1,6 @@
 # AI File Processor
 
-This script reads resumes from various file formats such as TXT, PDF, DOC, and DOCX, processes them, and generates responses using OpenAI's GPT-3.5 Turbo model. Each generated response is saved in it's own text file using the name of the original file with the prompt name appended.
+This script reads files from various file formats such as TXT, PDF, DOC, and DOCX, processes them, and generates responses using OpenAI's GPT-3.5 Turbo model. Each generated response is saved in it's own text file using the name of the original file with the prompt name appended.
 
 ## Table of Contents
 
@@ -17,7 +17,7 @@ This script reads resumes from various file formats such as TXT, PDF, DOC, and D
 - Node.js (developed on v18.12.0 (LTS))
 - OpenAI API key
 - Configuration details (explained in the [Configuration](#configuration) section)
-- Resumes in supported formats (PDF, DOC, DOCX, TXT)
+- files in supported formats (PDF, DOC, DOCX, TXT)
 
 ## Setup
 
@@ -31,7 +31,7 @@ npm install
 ## Usage
 1. Open the config/default.json file and configure the necessary values (explained in the [Configuration](#configuration) section).
 
-2. Place your resumes in the specified Resume_Folder path.
+2. Place your files in the specified Resume_Folder path.
 
 3. Run the script using the following command:
 ~~~
@@ -43,7 +43,7 @@ Modify the configuration in the config/default.json file to set up the script:
 
 - ChatGPT_API_Key: **Your OpenAI API key.**
 - GPTOrgId: **Your OpenAI organization ID.**
-- Resume_Folder: **Path to the folder containing resumes.**
+- Resume_Folder: **Path to the folder containing files.**
 - Prompts: **Array of prompts with system and name.**
 
 The following configuration items should not need changes and may not be in use:
@@ -62,7 +62,7 @@ The script supports the following file formats:
 - .doc: DOC files are parsed using the Mammoth library. **Not Operational Yet
 
 ## Notes
-The script processes resumes, generates responses, and saves them to files based on the provided prompts.
+The script processes files, generates responses, and saves them to files based on the provided prompts.
 Some file formats might not be fully supported or implemented (as indicated in the code comments).
 Make sure to stay within the OpenAI API usage limits and adjust the max_tokens value in the generateChatResponse function accordingly.
 
