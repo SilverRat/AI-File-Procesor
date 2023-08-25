@@ -1,4 +1,4 @@
-# Batch File Processing Script
+# AI File Processor
 
 This script reads resumes from various file formats such as TXT, PDF, DOC, and DOCX, processes them, and generates responses using OpenAI's GPT-3.5 Turbo model. Each generated response is saved in it's own text file using the name of the original file with the prompt name appended.
 
