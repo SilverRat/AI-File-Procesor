@@ -10,7 +10,7 @@
     }],
     "Prompts" :  [{
         "Name": "Top5Skills", 
-        "System": "You are a human resources professional and an expert in Information Technology. Use the resume delimited by triple single quotes to answer questions.",
+        "System": "You are a human resources professional and an expert in Information Technology. Use the resume provided to answer questions.",
         "Prompt": "Question: Summarize the top 5 technical skills for the candidate in the provided resume"
     }]
 }
