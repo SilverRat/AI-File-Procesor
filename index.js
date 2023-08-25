@@ -116,7 +116,7 @@ function readFilesInFolder(folderPath) {
               console.error('Error reading file:', err);
               return;
             }
-            //processResume(data,filePath);
+            //processFile(data,filePath);
           });
           */
 
@@ -128,7 +128,7 @@ function readFilesInFolder(folderPath) {
                   console.error('Error:', err);
                   return;
                 }
-                processResume(data,filePath);
+                processFile(data,filePath);
               });
             break;
         case '.doc':
@@ -195,24 +195,24 @@ async function generateChatResponse(system, userPrompt) {
   }
 }
 
-async function processResume(resume, filePath) {
+async function processFile(file, filePath) {
 
-  resume = resume.replace(/(\r?\n)/g, " "); //Remove Carriage return / line feed
-  resume = resume.replace(/(\r)/g, " "); // Remove Carriage return
-  resume = resume.replace(/(\t)/g, " "); // Remove tabs
-  resume = resume.replace(/‘/g, ""); // Remove ticks
-  resume = resume.replace(/•/g, ""); // Remove bullets
-  resume = resume.replace(/¨/g, ""); // Remove ¨
+  file = file.replace(/(\r?\n)/g, " "); //Remove Carriage return / line feed
+  file = file.replace(/(\r)/g, " "); // Remove Carriage return
+  file = file.replace(/(\t)/g, " "); // Remove tabs
+  file = file.replace(/‘/g, ""); // Remove ticks
+  file = file.replace(/•/g, ""); // Remove bullets
+  file = file.replace(/¨/g, ""); // Remove ¨
   
 
   //Reduce character count so we will have around 3500 tokens max
-  resume = resume.substring(0, 14000); 
+  file = file.substring(0, 14000); 
 
 
-  // check resume size (tokens) and reduce size if needed
+  // check file size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
 
-    const userPrompt = "Resume: " + resume + " " + prompt;
+    const userPrompt = "Resume: " + file + " " + prompt;
     const response = await generateChatResponse(prompt.System, userPrompt);
 
     console.log("Write Response " + response);
