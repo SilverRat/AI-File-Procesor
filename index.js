@@ -10,6 +10,7 @@ import { Configuration, OpenAIApi } from "openai";
 // Read Configuration
 const ChatGPT_API_Key = config.get("ChatGPT_API_Key");
 const GPTOrgId = config.get("GPTOrgId");
+const GPTProjId = config.get("GPTProjID");
 const File_Folder = config.get("File_Folder");
 const Max_GPT_Version = config.get("Max_GPT_Version");
 const Text_Separator = config.get("Text_Separator");
@@ -19,7 +20,7 @@ const Prompts = config.get("Prompts");
 // Set your OpenAI API key here
 const configuration = new Configuration({
     organization: GPTOrgId,
-    apiKey: ChatGPT_API_Key,
+    apiKey: ChatGPT_API_Key
 });
 const openai = new OpenAIApi(configuration);
 

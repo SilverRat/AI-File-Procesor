@@ -3,3 +3,4 @@ config/local.json
 /certs/
 ProcessOutput.txt
 logs.txt
+/sample_files
