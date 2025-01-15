@@ -23,12 +23,6 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
-//Sanity Check
-// dumpConfiguration();
-
-// Lets find and loop through folders
-readFilesInFolder(File_Folder);
-
 async function readTextFile(filePath, callback) {
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
@@ -72,7 +66,6 @@ function readWordFile(filePath, callback) {
   }
 }
 
-
 function readDocFile(filePath, callback) {
   fs.readFile(filePath, 'binary', (err, data) => {
     if (err) {
@@ -92,25 +85,21 @@ function readDocFile(filePath, callback) {
   });
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
 
+async function processBatch(filesBatch, folderPath) {
+  const promises = filesBatch.map(async (file) => {
+    const filePath = path.join(folderPath, file);
+    const fileType = path.extname(file).toLowerCase();
 
-function readFilesInFolder(folderPath) {
-  fs.readdir(folderPath, (err, files) => {
-    if (err) {
-      console.error('Error reading folder:', err);
-      return;
-    }
+    console.log(`File: ${file}`);
+    console.log(`Type: ${fileType}`);
 
-    files.forEach(file => {
-      const filePath = path.join(folderPath, file);
-      const fileType = path.extname(file).toLowerCase();
-
-      console.log(`File: ${file}`);
-      console.log(`Type: ${fileType}`);
-
-      switch (fileType) {
-        case '.txt':
-          /*
+    switch (fileType) {
+      case '.txt':
+         /*
           readTextFile(filePath, (err, data) => {
             if (err) {
               console.error('Error reading file:', err);
@@ -118,54 +107,72 @@ function readFilesInFolder(folderPath) {
             }
             //processFile(data,filePath);
           });
+        */
+        console.log(`${fileType} file detected. Supported but not processing. Skipping reading the file.`);
+        break;
+      case '.pdf':
+        await readPDFFile(filePath, async (err, data) => {
+          if (err) {
+            console.error('Error:', err);
+            return;
+          }
+          await processFile(data, filePath);
+        });
+        break;
+      case '.doc':
+        /*
+          readDocFile(filePath, (err, data) => {
+              if (err) {
+                console.error('Error:', err);
+                return;
+              }
+              console.log(`Content of ${file}:`);
+              console.log(data);
+            });
+        */
+        console.log(`${fileType} file detected. Currently unsupported. Skipping reading the file.`);
+        break;
+      case '.docx':
+        /*
+        readWordFile(filePath, (err, data) => {
+            if (err) {
+              console.error('Error:', err);
+              return;
+            }
+            console.log(`Content of ${file}:`);
+            console.log(data);
+          });
           */
-
-          console.log(`${fileType} file detected. Supported but not processing. Skipping reading the file.`);
-          break;
-        case '.pdf':
-           readPDFFile(filePath, (err, data) => {
-                if (err) {
-                  console.error('Error:', err);
-                  return;
-                }
-                processFile(data,filePath);
-              });
-            break;
-        case '.doc':
-          /*
-            readDocFile(filePath, (err, data) => {
-                if (err) {
-                  console.error('Error:', err);
-                  return;
-                }
-                console.log(`Content of ${file}:`);
-                console.log(data);
-              });
-          */
-
-          console.log(`${fileType} file detected. Currently unsupported. Skipping reading the file.`);
-          break;
-        case '.docx':
-            /*
-            readWordFile(filePath, (err, data) => {
-                if (err) {
-                  console.error('Error:', err);
-                  return;
-                }
-                console.log(`Content of ${file}:`);
-                console.log(data);
-              });
-              */
-          console.log(`${fileType} file detected. Currently unsupported. Skipping reading the file.`);
-          break;
-
-        default:
-          console.log('Unsupported file type. Skipped reading the file.');
-      }
-    });
+        console.log(`${fileType} file detected. Currently unsupported. Skipping reading the file.`);
+        break;
+      default:
+        console.log('Unsupported file type. Skipped reading the file.');
+    }
   });
+
+  // Wait for all files in the batch to finish processing
+  await Promise.all(promises);
 }
 
+async function readFilesInFolder(folderPath, batchSize = 10) {
+  fs.readdir(folderPath, async (err, files) => {
+    if (err) {
+      console.error('Error reading folder:', err);
+      return;
+    }
+
+    for (let i = 0; i < files.length; i += batchSize) {
+      const batch = files.slice(i, i + batchSize);
+      console.log(`Processing batch of size ${batch.length}:`, batch);
+
+      await processBatch(batch, folderPath);
+
+      // Optional delay between batches
+      console.log(`Batch complete. Waiting before next batch...`);
+      await sleep(1000); // Adjust delay as needed (milliseconds)
+    }
+  });
+}
 
 async function generateChatResponse(system, userPrompt) {
   console.log();
@@ -179,7 +186,7 @@ async function generateChatResponse(system, userPrompt) {
         { role: 'system', content: system },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 400 // Adjust as needed - NOTE. This is the tokens to reserve for the RESpONSE!!!!
+      max_tokens: 400 // Adjust as needed - NOTE. This is the tokens to reserve for the RESPONSE!!!!
     });
     console.log("made chat call");
       
@@ -196,22 +203,18 @@ async function generateChatResponse(system, userPrompt) {
 }
 
 async function processFile(file, filePath) {
-
   file = file.replace(/(\r?\n)/g, " "); //Remove Carriage return / line feed
   file = file.replace(/(\r)/g, " "); // Remove Carriage return
   file = file.replace(/(\t)/g, " "); // Remove tabs
   file = file.replace(/‘/g, ""); // Remove ticks
   file = file.replace(/•/g, ""); // Remove bullets
   file = file.replace(/¨/g, ""); // Remove ¨
-  
 
   //Reduce character count so we will have around 3500 tokens max
   file = file.substring(0, 14000); 
 
-
   // check file size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
-
     const userPrompt = "Resume: " + file + " " + prompt;
     const response = await generateChatResponse(prompt.System, userPrompt);
 
@@ -227,16 +230,7 @@ async function processFile(file, filePath) {
       }
     });
   }
-
 }
 
-//Helper function
-function dumpConfiguration() {
-  console.log("******** Config **************");
-  console.log("ChatGPT_API_Key: " + ChatGPT_API_Key);
-  console.log("File_Folder: " + File_Folder); 
-  console.log("Max_GPT_Version: " + Max_GPT_Version);
-  console.log("Text_Separator: " + Text_Separator);
-  console.log("ChatGPT_Specs: " + ChatGPT_Specs[0].Version + " " + ChatGPT_Specs[0].MaxTokens);
-  console.log("Prompts: " + Prompts[0].Name + " " + Prompts[0].Prompt);
-}
+// Call the function to process files in batches of 10
+readFilesInFolder(File_Folder, 10);
