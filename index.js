@@ -11,9 +11,8 @@ import { Configuration, OpenAIApi } from "openai";
 const ChatGPT_API_Key = config.get("ChatGPT_API_Key");
 const GPTOrgId = config.get("GPTOrgId");
 const File_Folder = config.get("File_Folder");
-const Max_GPT_Version = config.get("Max_GPT_Version");
+const Output_Folder = config.get("Output_Folder");
 const Text_Separator = config.get("Text_Separator");
-const ChatGPT_Specs = config.get("ChatGPT_Specs");
 const Prompts = config.get("Prompts");
 
 // Set your OpenAI API key here
@@ -116,6 +115,7 @@ async function processBatch(filesBatch, folderPath) {
             console.error('Error:', err);
             return;
           }
+          console.log("PDF Text: ", data);
           await processFile(data, filePath);
         });
         break;
@@ -168,6 +168,7 @@ async function readFilesInFolder(folderPath, batchSize = 10) {
       await processBatch(batch, folderPath);
 
       // Optional delay between batches
+
       console.log(`Batch complete. Waiting before next batch...`);
       await sleep(1000); // Adjust delay as needed (milliseconds)
     }
@@ -178,6 +179,8 @@ async function generateChatResponse(system, userPrompt) {
   console.log();
   console.log("entering generateChatResponse");
 
+  //return "Dummy message";
+
   try {
     const response = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo', // Change the model if needed
@@ -186,13 +189,13 @@ async function generateChatResponse(system, userPrompt) {
         { role: 'system', content: system },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 400 // Adjust as needed - NOTE. This is the tokens to reserve for the RESPONSE!!!!
+      max_tokens: 800 // Adjust as needed - NOTE. This is the tokens to reserve for the RESPONSE!!!!
     });
-    console.log("made chat call");
+    console.log("made gpt call");
       
-    console.log(response);
-    console.log();
-    console.log(response.data.choices[0]);
+    //console.log(response);
+    //console.log();
+    //console.log(response.data.choices[0]);
 
     return response.data.choices[0].message.content;
   } catch (error) {
@@ -215,13 +218,14 @@ async function processFile(file, filePath) {
 
   // check file size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
-    const userPrompt = "Resume: " + file + " " + prompt;
+    const userPrompt = prompt + Text_Separator + file;
     const response = await generateChatResponse(prompt.System, userPrompt);
 
     console.log("Write Response " + response);
 
     // Save the response to a file
-    const fileName = filePath + "_" + prompt.Name + ".txt";
+
+    const fileName = filePath + "_" + prompt.Name + ".json";
     fs.writeFile(fileName, response, (err) => {
       if (err) {
         console.error('Error saving response to file:', err);
