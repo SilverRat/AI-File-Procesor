@@ -1,4 +1,5 @@
 config/local.json
+config/local copy.json
 /node_modules/
 /certs/
 ProcessOutput.txt

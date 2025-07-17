@@ -23,6 +23,7 @@ const configuration = new Configuration({
 });
 const openai = new OpenAIApi(configuration);
 
+// ---- File reading helpers ----
 async function readTextFile(filePath, callback) {
   fs.readFile(filePath, 'utf8', (err, data) => {
     if (err) {
@@ -33,22 +34,23 @@ async function readTextFile(filePath, callback) {
   });
 }
 
-async function readPDFFile(filePath, callback) {
-  const textLines = [];
-  const pdfReader = new PdfReader();
+// PDF reader rewritten as a promise
+function readPDFFile(filePath) {
+  return new Promise((resolve, reject) => {
+    const textLines = [];
+    const pdfReader = new PdfReader();
 
-  pdfReader.parseFileItems(filePath, (err, item) => {
-    if (err) {
-      console.error('Error reading PDF file:', err);
-      return callback(err, null);
-    }
-
-    if (!item) {
-      const content = textLines.join('\n');
-      callback(null, content);
-    } else if (item.text) {
-      textLines.push(item.text);
-    }
+    pdfReader.parseFileItems(filePath, (err, item) => {
+      if (err) {
+        reject(err);
+        return;
+      }
+      if (!item) {
+        resolve(textLines.join('\n'));
+      } else if (item.text) {
+        textLines.push(item.text);
+      }
+    });
   });
 }
 
@@ -56,7 +58,7 @@ function readWordFile(filePath, callback) {
   try {
     const data = fs.readFileSync(filePath, 'binary');
     const doc = new Docxtemplater();
-    doc.loadZip(data); 
+    doc.loadZip(data);
 
     const content = doc.getFullText();
     callback(null, content);
@@ -85,123 +87,96 @@ function readDocFile(filePath, callback) {
   });
 }
 
+// ---- Utility ----
 function sleep(ms) {
   return new Promise(resolve => setTimeout(resolve, ms));
 }
 
-async function processBatch(filesBatch, folderPath) {
-  const promises = filesBatch.map(async (file) => {
-    const filePath = path.join(folderPath, file);
-    const fileType = path.extname(file).toLowerCase();
+// ---- Main processing logic ----
 
-    console.log(`File: ${file}`);
-    console.log(`Type: ${fileType}`);
+// SERIALIZED version: one file at a time
+async function processFilesSerially(folderPath) {
+  try {
+    const files = await fs.promises.readdir(folderPath);
 
-    switch (fileType) {
-      case '.txt':
-         /*
-          readTextFile(filePath, (err, data) => {
-            if (err) {
-              console.error('Error reading file:', err);
-              return;
-            }
-            //processFile(data,filePath);
-          });
-        */
-        console.log(`${fileType} file detected. Supported but not processing. Skipping reading the file.`);
-        break;
-      case '.pdf':
-        await readPDFFile(filePath, async (err, data) => {
-          if (err) {
-            console.error('Error:', err);
-            return;
+    for (const file of files) {
+      const filePath = path.join(folderPath, file);
+      const fileType = path.extname(file).toLowerCase();
+
+      console.log(`\nProcessing file: ${file} (${fileType})`);
+
+      switch (fileType) {
+        case '.pdf': {
+          try {
+            const data = await readPDFFile(filePath);
+            await processFile(data, filePath);
+          } catch (err) {
+            console.error(`Error reading PDF ${file}:`, err);
           }
-          await processFile(data, filePath);
-        });
-        break;
-      case '.doc':
-        /*
-          readDocFile(filePath, (err, data) => {
-              if (err) {
-                console.error('Error:', err);
-                return;
-              }
-              console.log(`Content of ${file}:`);
-              console.log(data);
-            });
-        */
-        console.log(`${fileType} file detected. Currently unsupported. Skipping reading the file.`);
-        break;
-      case '.docx':
-        /*
-        readWordFile(filePath, (err, data) => {
-            if (err) {
-              console.error('Error:', err);
-              return;
-            }
-            console.log(`Content of ${file}:`);
-            console.log(data);
-          });
-          */
-        console.log(`${fileType} file detected. Currently unsupported. Skipping reading the file.`);
-        break;
-      default:
-        console.log('Unsupported file type. Skipped reading the file.');
-    }
-  });
+          break;
+        }
 
-  // Wait for all files in the batch to finish processing
-  await Promise.all(promises);
+        case '.txt': {
+          console.log(`${fileType} file detected. Supported but not processing. Skipping.`);
+          break;
+        }
+
+        case '.doc': {
+          console.log(`${fileType} file detected. Currently unsupported. Skipping.`);
+          break;
+        }
+
+        case '.docx': {
+          console.log(`${fileType} file detected. Currently unsupported. Skipping.`);
+          break;
+        }
+
+        default: {
+          console.log(`Unsupported file type: ${fileType}. Skipping.`);
+          break;
+        }
+      }
+
+      // Optional delay between files
+      await sleep(500); // adjust delay if needed
+    }
+
+    console.log('\n✅ Finished processing all files (one by one)');
+  } catch (err) {
+    console.error('Error reading folder:', err);
+  }
 }
 
-async function readFilesInFolder(folderPath, batchSize = 10) {
-  fs.readdir(folderPath, async (err, files) => {
-    if (err) {
-      console.error('Error reading folder:', err);
-      return;
-    }
-
-    for (let i = 0; i < files.length; i += batchSize) {
-      const batch = files.slice(i, i + batchSize);
-      console.log(`Processing batch of size ${batch.length}:`, batch);
-
-      await processBatch(batch, folderPath);
-
-      // Optional delay between batches
-      console.log(`Batch complete. Waiting before next batch...`);
-      await sleep(1000); // Adjust delay as needed (milliseconds)
-    }
-  });
-}
-
+// ---- GPT call ----
 async function generateChatResponse(system, userPrompt) {
   console.log();
   console.log("entering generateChatResponse");
 
   try {
     const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo', // Change the model if needed
-      temperature: 0.0,
+      model: 'gpt-4-turbo', // Change the model if needed
+      temperature: 0.5,
       messages: [
         { role: 'system', content: system },
         { role: 'user', content: userPrompt }
       ],
-      max_tokens: 400 // Adjust as needed - NOTE. This is the tokens to reserve for the RESPONSE!!!!
+      max_tokens: 1200 // Adjust as needed
     });
     console.log("made chat call");
-      
+
     console.log(response);
     console.log();
     console.log(response.data.choices[0]);
 
     return response.data.choices[0].message.content;
   } catch (error) {
-      console.error('Error generating response:', error.message);
-      console.error(JSON.stringify(error,null,2));
+    console.error('Error generating response:', error.message);
+    console.error(JSON.stringify(error, null, 2));
     return '';
   }
 }
 
+// ---- File processor ----
 async function processFile(file, filePath) {
   file = file.replace(/(\r?\n)/g, " "); //Remove Carriage return / line feed
   file = file.replace(/(\r)/g, " "); // Remove Carriage return
@@ -210,12 +185,12 @@ async function processFile(file, filePath) {
   file = file.replace(/•/g, ""); // Remove bullets
   file = file.replace(/¨/g, ""); // Remove ¨
 
-  //Reduce character count so we will have around 3500 tokens max
-  file = file.substring(0, 14000); 
+  // Reduce character count so we will have around 3500 tokens max
+  file = file.substring(0, 14000);
 
   // check file size (tokens) and reduce size if needed
   for (const prompt of Prompts) {
-    const userPrompt = "Resume: " + file + " " + prompt;
+    const userPrompt = prompt.Prompt + " " + "Resume: " + file;
     const response = await generateChatResponse(prompt.System, userPrompt);
 
     console.log("Write Response " + response);
@@ -232,5 +207,5 @@ async function processFile(file, filePath) {
   }
 }
 
-// Call the function to process files in batches of 10
-readFilesInFolder(File_Folder, 10);
+// ---- Start processing ----
+processFilesSerially(File_Folder);
