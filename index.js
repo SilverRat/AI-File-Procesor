@@ -11,9 +11,8 @@ import { Configuration, OpenAIApi } from "openai";
 const ChatGPT_API_Key = config.get("ChatGPT_API_Key");
 const GPTOrgId = config.get("GPTOrgId");
 const File_Folder = config.get("File_Folder");
-const Max_GPT_Version = config.get("Max_GPT_Version");
+const Output_Folder = config.get("Output_Folder");
 const Text_Separator = config.get("Text_Separator");
-const ChatGPT_Specs = config.get("ChatGPT_Specs");
 const Prompts = config.get("Prompts");
 
 // Set your OpenAI API key here
@@ -152,6 +151,8 @@ async function generateChatResponse(system, userPrompt) {
   console.log();
   console.log("entering generateChatResponse");
 
+  //return "Dummy message";
+
   try {
     const response = await openai.createChatCompletion({
       model: 'gpt-4-turbo', // Change the model if needed
@@ -196,7 +197,8 @@ async function processFile(file, filePath) {
     console.log("Write Response " + response);
 
     // Save the response to a file
-    const fileName = filePath + "_" + prompt.Name + ".txt";
+
+    const fileName = filePath + "_" + prompt.Name + ".json";
     fs.writeFile(fileName, response, (err) => {
       if (err) {
         console.error('Error saving response to file:', err);
